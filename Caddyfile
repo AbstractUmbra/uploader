@@ -1,0 +1,8 @@
+umbra-is.gay:80 {
+    root * /etc/images/
+    file_server
+}
+
+umbra-is.gay:80/dickpic {
+    reverse_proxy fastapi:9000
+}

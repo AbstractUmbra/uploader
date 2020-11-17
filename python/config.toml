@@ -1,0 +1,13 @@
+[database]
+dsn = "postgresql://cdn:ImageHost!1231@195.154.69.209:32932/cdn"
+user = "cdn"
+password = "ImageHost!1231"
+schema = "schema.sql"
+
+[users]
+umbra = "AbsolutelyBarbaricToken!1231"
+
+[web]
+url = "https://umbra-is.gay"
+
+[path]

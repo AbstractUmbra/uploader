@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  caddy:
+    image: caddy:latest
+    ports:
+      - 443:443/tcp
+      - 80:80/tcp
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - /home/penumbra/images/:/etc/images/:ro
+    container_name: "caddy"
+
+  fastapi:
+    image: python:3.9.0-buster
+    build: .
+    ports:
+      - 9000:9000/tcp
+    volumes:
+      - /home/penumbra/images/:/etc/images/:rw
+    container_name: "fastapi"

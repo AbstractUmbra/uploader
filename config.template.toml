@@ -1,7 +1,0 @@
-[[authentication]]
-
-[users]
-User = { "token": "" }
-
-[[limitations]]
-Images = 100_000_000
