@@ -11,6 +11,8 @@ toml = "^0.10.2"
 uvicorn = "^0.12.2"
 python-multipart = "^0.0.5"
 asyncpg = "^0.21.0"
+PyJWT = "^1.7.1"
+pycryptodome = "^3.9.9"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.6.0"

@@ -5,9 +5,8 @@ password = "ImageHost!1231"
 schema = "schema.sql"
 
 [users]
-umbra = "AbsolutelyBarbaricToken!1231"
+100 = {name = "Umbra", token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6MTAwfQ.-sTRI5u_Ger14I4L5v1Q5G53kj1Cr5zjFVT_4LNafHGRdeAmKx0FzSp8Jr6xxr5vCPICjlHlPyqLIVu7qL6HAw"}
+101 = {name = "Kaylynn", token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6MTAxfQ.NMk-ZgUpPL-Pz_Wyn04uZuPAkCvzMddmnMCMr1S0BpaDnUi8EgLs33BSVbhJQbDsH1WT8m4p7o_nT94lSPSCCA"}
 
 [web]
 url = "https://umbra-is.gay"
-
-[path]

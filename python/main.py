@@ -7,6 +7,8 @@ from fastapi import FastAPI, File, Security, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
 
+import api_token
+
 auth = HTTPBearer()
 config = toml.load(pathlib.Path("config.toml"))
 
@@ -19,8 +21,9 @@ def gen_filename(length: int = 7):
 
 
 def verify_auth(authentication: Security(auth)):
-    return authentication.credentials == config['users']['umbra']
-
+    user_id = api_token.get_user_id(authentication.credentials)
+    if user := config['users'].get(str(user_id), None):
+        return user['token'] == authentication.credentials
 
 filetype_mapping = {
     "image/jpeg": ".jpg",
@@ -38,18 +41,23 @@ async def post_image(image: UploadFile = File(None), authorization: str = Securi
     if not verify_auth(authorization):
         return JSONResponse({"error": "Unauthorized"}, status_code=403)
 
-    if len(await image.read()) == 0:
+    if not image or len(await image.read()) == 0:
         return JSONResponse({"error": "Empty data"}, status_code=400)
+
+    user_id = api_token.get_user_id(authorization.credentials)
+    user = config['users'].get(str(user_id))
+    username = user['name']
 
     new_path_name = gen_filename()
     new_file_name = f"{new_path_name}{filetype_mapping[image.content_type]}"
-    new_path = f"{root_path}/{new_file_name}"
+    new_path = f"{root_path}/{username}/{new_file_name}"
 
     with open(f"{new_path}", "wb") as dump:
         await image.seek(0)
-        dump.write(await image.read())
+        data = await image.read()
+        dump.write(data)
 
-    return JSONResponse({"image": f"{config['web']['url']}/{new_file_name}", "type": image.content_type}, status_code=201)
+    return JSONResponse({"image": f"{config['web']['url']}/{username}/{new_file_name}", "type": image.content_type, "size": len(data)}, status_code=201)
 
 
 @app.on_event("startup")
