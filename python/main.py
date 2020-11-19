@@ -1,4 +1,5 @@
 import pathlib
+from random import choice
 from secrets import token_urlsafe
 
 import asyncpg
@@ -16,14 +17,15 @@ app = FastAPI(title="CDN")
 root_path = pathlib.Path("/etc/images/")
 
 
-def gen_filename(length: int = 7):
-    return token_urlsafe(length)
+def gen_filename(length: int = 10):
+    return token_urlsafe(length).replace("-", "")
 
 
 def verify_auth(authentication: Security(auth)):
     user_id = api_token.get_user_id(authentication.credentials)
     if user := config['users'].get(str(user_id), None):
         return user['token'] == authentication.credentials
+
 
 filetype_mapping = {
     "image/jpeg": ".jpg",
@@ -41,7 +43,7 @@ async def post_image(image: UploadFile = File(None), authorization: str = Securi
     if not verify_auth(authorization):
         return JSONResponse({"error": "Unauthorized"}, status_code=403)
 
-    if not image or len(await image.read()) == 0:
+    if not image or len((data := await image.read())) == 0:
         return JSONResponse({"error": "Empty data"}, status_code=400)
 
     user_id = api_token.get_user_id(authorization.credentials)
@@ -54,10 +56,11 @@ async def post_image(image: UploadFile = File(None), authorization: str = Securi
 
     with open(f"{new_path}", "wb") as dump:
         await image.seek(0)
-        data = await image.read()
         dump.write(data)
 
-    return JSONResponse({"image": f"{config['web']['url']}/{username}/{new_file_name}", "type": image.content_type, "size": len(data)}, status_code=201)
+    url = choice(config['web']['url'])
+
+    return JSONResponse({"image": f"{url}/{username}/{new_file_name}", "type": image.content_type, "size": len(data)}, status_code=201)
 
 
 @app.on_event("startup")

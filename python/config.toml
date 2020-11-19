@@ -9,4 +9,7 @@ schema = "schema.sql"
 101 = {name = "Kaylynn", token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6MTAxfQ.NMk-ZgUpPL-Pz_Wyn04uZuPAkCvzMddmnMCMr1S0BpaDnUi8EgLs33BSVbhJQbDsH1WT8m4p7o_nT94lSPSCCA"}
 
 [web]
-url = "https://umbra-is.gay"
+url = [
+    "https://umbra-is.gay",
+    "https://umbra.might-be.gay"
+]
