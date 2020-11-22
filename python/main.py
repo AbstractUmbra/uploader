@@ -34,7 +34,6 @@ filetype_mapping = {
     "video/mp4": ".mp4"
 }
 
-
 @app.post("/dickpic", status_code=201)
 async def post_image(image: UploadFile = File(None), authorization: str = Security(auth)):
     if not authorization or not authorization.credentials:
@@ -58,9 +57,9 @@ async def post_image(image: UploadFile = File(None), authorization: str = Securi
         await image.seek(0)
         dump.write(data)
 
-    url = choice(config['web']['url'])
+    url = choice(config['web'][str(user_id)])
 
-    return JSONResponse({"image": f"{url}/{username}/{new_file_name}", "type": image.content_type, "size": len(data)}, status_code=201)
+    return JSONResponse({"image": f"{url}/{new_file_name}", "type": image.content_type, "size": len(data)}, status_code=201)
 
 
 @app.on_event("startup")
