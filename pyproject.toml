@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "abstractumbra-cdn"
+version = "0.1.0"
+description = ""
+authors = ["Alex Nørgaard <Umbra@AbstractUmbra.xyz>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiohttp = "*"
+fastapi = "*"
+toml = "*"
+uvicorn = "*"
+python-multipart = "*"
+asyncpg = "*"
+PyJWT = "*"
+pycryptodome = "*"
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+isort = "*"
+
+[tool.pyright]
+exclude = ["**/__pycache__"]
+typeCheckingMode = "basic1"
+pythonVersion = "3.10"
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+strictParameterNoneValue = true
+reportMissingImports = "error"
+reportUnusedImport = "error"
+reportUnusedClass = "error"
+reportUnusedFunction = "error"
+reportUnusedVariable = "error"
+reportUnusedExpression = "error"
+reportGeneralTypeIssues = "error"
+reportDuplicateImport = "error"
+reportUntypedFunctionDecorator = "error"
+reportUnnecessaryTypeIgnoreComment = "warning"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

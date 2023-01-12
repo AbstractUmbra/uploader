@@ -1,0 +1,16 @@
+[database]
+dsn = "..."
+user = "..."
+password = "..."
+schema_file = "..."
+
+[users]
+"UserOne" = {id = 100, token = "eyj0..."}
+
+[web]
+"UserOne" = [
+    "https://example.com"
+]
+
+[webhook]
+url = "..." # optional
