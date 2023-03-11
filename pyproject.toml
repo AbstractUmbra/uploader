@@ -21,22 +21,8 @@ isort = "*"
 
 [tool.pyright]
 exclude = ["**/__pycache__"]
-typeCheckingMode = "basic1"
-pythonVersion = "3.10"
-strictListInference = true
-strictDictionaryInference = true
-strictSetInference = true
-strictParameterNoneValue = true
-reportMissingImports = "error"
-reportUnusedImport = "error"
-reportUnusedClass = "error"
-reportUnusedFunction = "error"
-reportUnusedVariable = "error"
-reportUnusedExpression = "error"
-reportGeneralTypeIssues = "error"
-reportDuplicateImport = "error"
-reportUntypedFunctionDecorator = "error"
-reportUnnecessaryTypeIgnoreComment = "warning"
+typeCheckingMode = "strict"
+pythonVersion = "3.11"
 
 [build-system]
 requires = ["poetry-core"]
