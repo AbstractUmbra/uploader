@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, Protocol, Sequence
+from typing import TYPE_CHECKING, Any, Iterable, Literal, Protocol, Sequence, TypedDict
 
 from fastapi import Request
 from starlette.datastructures import State as _State
@@ -8,7 +8,7 @@ from starlette.datastructures import State as _State
 if TYPE_CHECKING:
     from types import TracebackType
 
-    from asyncpg import Connection
+    from asyncpg import Connection, Record
 
     from main import UploaderApp
 
@@ -18,11 +18,13 @@ class UploaderState(_State):
 
 
 class UploaderRequest(Request):
-    app: UploaderApp
+    @property
+    def app(self) -> UploaderApp:
+        ...
 
 
 class ConnectionContextManager(Protocol):
-    async def __aenter__(self) -> Connection:
+    async def __aenter__(self) -> Connection[Record]:
         ...
 
     async def __aexit__(
@@ -35,7 +37,7 @@ class ConnectionContextManager(Protocol):
 
 
 class TransactionContextManager(Protocol):
-    async def __aenter__(self) -> Connection:
+    async def __aenter__(self) -> Connection[Record]:
         ...
 
     async def __aexit__(
@@ -79,8 +81,25 @@ class DatabaseProtocol(Protocol):
     def acquire(self, *, timeout: float | None = None) -> ConnectionContextManager:
         ...
 
-    def release(self, connection: Connection) -> None:
+    def release(self, connection: Connection[Record]) -> None:
         ...
 
     def transaction(self) -> TransactionContextManager:
         ...
+
+
+class _ConfigHeaders(TypedDict):
+    Authorization: str
+
+
+class ConfigFile(TypedDict):
+    Version: str
+    Name: str
+    DestinationType: Literal["ImageUploader, FileUploader"]
+    RequestMethod: Literal["POST"]
+    RequestURL: Literal["https://upload.umbra-is.gay/file"]
+    Headers: _ConfigHeaders
+    Body: Literal["MultipartFormData"]
+    FileFormName: Literal["image"]
+    URL: str
+    DeletionURL: str

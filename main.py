@@ -16,15 +16,20 @@ from fastapi.security import HTTPBearer
 from fastapi.security.http import HTTPAuthorizationCredentials
 
 import api_token
-from types_ import UploaderRequest, UploaderState
+from types_ import ConfigFile, UploaderRequest, UploaderState
 
 
 class UploaderApp(FastAPI):
     state: UploaderState
 
     def __init__(self) -> None:
-        super().__init__(title="CDN", debug=True, docs_url=None, redoc_url=None)
-        self.add_event_handler("startup", func=self.app_startup)
+        super().__init__(
+            title="CDN",
+            debug=True,
+            docs_url=None,
+            redoc_url=None,
+            on_startup=[self.app_startup],
+        )
         self._config: dict[str, Any] = CONFIG
 
     async def app_startup(self) -> None:
@@ -99,8 +104,44 @@ CONFIG: dict[str, Any] = toml.load(pathlib.Path("config.toml"))
 ROOT_PATH: pathlib.Path = pathlib.Path("/etc/images/")
 AUDIO_PATH: pathlib.Path = pathlib.Path("/etc/audio/")
 
+CONFIG_FILE_JSON: ConfigFile = {
+    "Version": "14.0.1",
+    "Name": "Personal",
+    "DestinationType": "ImageUploader, FileUploader",
+    "RequestMethod": "POST",
+    "RequestURL": "https://upload.umbra-is.gay/file",
+    "Headers": {"Authorization": "Bearer {token}"},
+    "Body": "MultipartFormData",
+    "FileFormName": "image",
+    "URL": "{json:image}",
+    "DeletionURL": "{json:delete}",
+}
+
 
 app = UploaderApp()
+
+
+@app.post("/config", status_code=202)
+async def request_config(
+    request: UploaderRequest,
+    authorization: HTTPAuthorizationCredentials = Security(AUTH),
+) -> JSONResponse:
+    if not authorization or not authorization.credentials:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+    ret = request.app.verify_auth(authorization)
+    if ret is None:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+    authed, user = ret
+
+    if not authed:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+    ret = CONFIG_FILE_JSON.copy()
+    ret["Headers"]["Authorization"] = f"Bearer {user.token}"
+    ret["Name"] = f"{user.name.title()}'s uploader config"
+    return JSONResponse(ret)
 
 
 @app.post("/file", status_code=201)
@@ -124,6 +165,10 @@ async def post_file(
 
     if not image or len((data := await image.read())) == 0:
         return JSONResponse({"error": "Empty data"}, status_code=400)
+    if not image.content_type:
+        return JSONResponse(
+            {"error": "Unknown or missing content type"}, status_code=400
+        )
 
     new_path_name = gen_filename()
     new_file_name = f"{new_path_name}{FILETYPE_MAPPING[image.content_type]}"
@@ -142,7 +187,7 @@ async def post_file(
             await image.seek(0)
             dump.write(data)
 
-    url = choice(request.app._config["web"][user.name])
+    url = choice(request.app._config["web"][user.name])  # type: ignore
     delete = gen_filename(20)
 
     async with request.app.state.db.acquire() as conn:
@@ -182,6 +227,10 @@ async def post_audio(
 
     if not image or len((data := await image.read())) == 0:
         return JSONResponse({"error": "Empty data"}, status_code=400)
+    if not image.content_type:
+        return JSONResponse(
+            {"error": "Unknown or missing content type"}, status_code=400
+        )
 
     new_path_name = gen_filename()
     new_file_name = f"{new_path_name}{FILETYPE_MAPPING[image.content_type]}"
@@ -221,7 +270,7 @@ async def post_audio(
 @app.get("/file/{file_name}", status_code=200)
 async def del_image(request: UploaderRequest, file_name: str, user_id: int):
     user = None
-    for user_, data in request.app._config["users"].items():
+    for user_, data in request.app._config["users"].items():  # type: ignore
         if data["id"] == user_id:
             user = user_
             break
@@ -229,9 +278,7 @@ async def del_image(request: UploaderRequest, file_name: str, user_id: int):
     if user is None:
         return JSONResponse({"error": "Unauthorized"}, status_code=401)
 
-    record: asyncpg.Record = await request.app.state.db.fetchrow(
-        DELETE_QUERY, file_name, user_id
-    )
+    record = await request.app.state.db.fetchrow(DELETE_QUERY, file_name, user_id)
     if not record:
         return JSONResponse({"error": "Unauthorized."}, status_code=401)
 
@@ -241,6 +288,6 @@ async def del_image(request: UploaderRequest, file_name: str, user_id: int):
 
 
 if __name__ == "__main__":
-    uvicorn.run(
+    uvicorn.run(  # type: ignore
         app=app, host="0.0.0.0", port=9000, forwarded_allow_ips="*", proxy_headers=True
     )

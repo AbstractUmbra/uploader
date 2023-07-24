@@ -49,4 +49,4 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry install --without=dev --no-root
 
 COPY . /app/
-ENTRYPOINT poetry run python main.py
+ENTRYPOINT poetry run python -O main.py

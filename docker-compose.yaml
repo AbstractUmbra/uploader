@@ -1,19 +1,19 @@
-version: "3.7"
+
+networks:
+  main:
+    external: true
+    name: main
 
 services:
   uploader:
     build: .
+    container_name: "uploader"
+    extra_hosts:
+      - "database:host-gateway"
+    networks:
+      main:
     volumes:
       - /home/penumbra/images/:/etc/images/:rw
       - /home/penumbra/audio/:/etc/audio/:rw
-    container_name: "uploader"
-    networks:
-      main:
-        ipv4_address: 172.19.0.11
-    extra_hosts:
-      - "database:host-gateway"
 
-networks:
-  main:
-    name: main
-    external: true
+version: "3"
