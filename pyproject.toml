@@ -2,7 +2,7 @@
 name = "abstractumbra-cdn"
 version = "0.1.0"
 description = ""
-authors = ["Alex Nørgaard <Umbra@AbstractUmbra.dev>"]
+authors = ["Alex Nørgaard <umbra@abstractumbra.dev>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -17,13 +17,60 @@ pycryptodome = "*"
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
-isort = "*"
 asyncpg-stubs = "*"
+ruff = "*"
+
+[tool.black]
+line-length = 125
+preview = true
+
+[tool.ruff]
+line-length = 125
+select = [
+    "C4",
+    "F",
+    "G",
+    "I",
+    "PTH",
+    "RUF",
+    "SIM",
+    "TCH",
+    "UP",
+    "W",
+    "PERF",
+    "ANN",
+]
+ignore = [
+    "F401",
+    "F402",
+    "F403",
+    "F405",
+    "PERF203",
+    "RUF001",
+    "RUF009",
+    "SIM105",
+    "UP034",
+    "UP038",
+    "ANN101",
+    "ANN102",
+    "ANN401",
+]
+[tool.ruff.isort]
+split-on-trailing-comma = true
+combine-as-imports = true
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.flake8-quotes]
+inline-quotes = "single"
 
 [tool.pyright]
-exclude = ["**/__pycache__"]
+useLibraryCodeForTypes = true
 typeCheckingMode = "strict"
 pythonVersion = "3.11"
+venvPath = "."
+venv = "./venv"
 
 [build-system]
 requires = ["poetry-core"]

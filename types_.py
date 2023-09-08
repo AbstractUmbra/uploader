@@ -50,29 +50,19 @@ class TransactionContextManager(Protocol):
 
 
 class DatabaseProtocol(Protocol):
-    async def execute(
-        self, query: str, *args: Any, timeout: float | None = None
-    ) -> str:
+    async def execute(self, query: str, *args: Any, timeout: float | None = None) -> str:
         ...
 
-    async def fetch(
-        self, query: str, *args: Any, timeout: float | None = None
-    ) -> list[Any]:
+    async def fetch(self, query: str, *args: Any, timeout: float | None = None) -> list[Any]:
         ...
 
-    async def fetchrow(
-        self, query: str, *args: Any, timeout: float | None = None
-    ) -> Any | None:
+    async def fetchrow(self, query: str, *args: Any, timeout: float | None = None) -> Any | None:
         ...
 
-    async def fetchval(
-        self, query: str, *args: Any, timeout: float | None = None
-    ) -> Any | None:
+    async def fetchval(self, query: str, *args: Any, timeout: float | None = None) -> Any | None:
         ...
 
-    async def executemany(
-        self, query: str, args: Iterable[Sequence[Any]], *, timeout: float | None = None
-    ) -> None:
+    async def executemany(self, query: str, args: Iterable[Sequence[Any]], *, timeout: float | None = None) -> None:
         ...
 
     async def close(self) -> None:
@@ -103,3 +93,26 @@ class ConfigFile(TypedDict):
     FileFormName: Literal["image"]
     URL: str
     DeletionURL: str
+
+
+class _DatabaseConfig(TypedDict):
+    dsn: str
+    user: str
+    password: str
+    schema_file: str
+
+
+class _UserConfig(TypedDict):
+    id: int
+    token: str
+
+
+class _WebhookConfig(TypedDict):
+    url: str
+
+
+class Config(TypedDict):
+    database: _DatabaseConfig
+    users: dict[str, _UserConfig]
+    web: dict[str, list[str]]
+    webhook: _WebhookConfig
