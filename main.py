@@ -3,7 +3,7 @@ from __future__ import annotations
 import pathlib
 from random import choice
 from secrets import token_urlsafe
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple
 
 import aiohttp
 import asyncpg
@@ -12,22 +12,19 @@ import uvicorn
 from fastapi import FastAPI, File, Form, Header, Security, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
+from fastapi.security.http import HTTPAuthorizationCredentials  # noqa: TCH002
 
 import api_token
-
-if TYPE_CHECKING:
-    from fastapi.security.http import HTTPAuthorizationCredentials
-
-    from types_ import Config, ConfigFile, UploaderRequest, UploaderState
+from types_ import Config, ConfigFile, UploaderRequest, UploaderState  # noqa: TCH001
 
 
 class UploaderApp(FastAPI):
-    state: UploaderState
+    state: UploaderState  # type: ignore
 
     def __init__(self) -> None:
         super().__init__(
             title="CDN",
-            debug=True,
+            debug=False,
             docs_url=None,
             redoc_url=None,
             on_startup=[self.app_startup],
@@ -35,9 +32,7 @@ class UploaderApp(FastAPI):
         self._config: Config = CONFIG
 
     async def app_startup(self) -> None:
-        self.state.db = await asyncpg.create_pool(
-            self._config["database"]["dsn"], max_inactive_connection_lifetime=0
-        )  # type: ignore # override for protocol use
+        self.state.db = await asyncpg.create_pool(self._config["database"]["dsn"], max_inactive_connection_lifetime=0)  # type: ignore # override for protocol use
         assert self.state.db
 
         with pathlib.Path(self._config["database"]["schema_file"]).open() as schema:
@@ -142,7 +137,7 @@ async def request_config(
 @app.post("/file", status_code=201)
 async def post_file(
     request: UploaderRequest,
-    image: UploadFile = File(None),
+    image: UploadFile,
     authorization: HTTPAuthorizationCredentials = Security(AUTH),
     preserve: bool | None = Header(False),
 ) -> JSONResponse:

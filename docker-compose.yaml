@@ -1,8 +1,4 @@
-
-networks:
-  main:
-    external: true
-    name: main
+version: "3"
 
 services:
   uploader:
@@ -16,4 +12,6 @@ services:
       - /home/penumbra/images/:/etc/images/:rw
       - /home/penumbra/audio/:/etc/audio/:rw
 
-version: "3"
+networks:
+  main:
+    external: true

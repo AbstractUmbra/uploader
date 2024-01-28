@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, Literal, Protocol, Sequence, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, Protocol, TypedDict
 
 from fastapi import Request
 from starlette.datastructures import State as _State
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Sequence
     from types import TracebackType
 
     from asyncpg import Connection, Record
