@@ -16,15 +16,11 @@ PyJWT = "*"
 pycryptodome = "*"
 
 [tool.poetry.group.dev.dependencies]
-black = "*"
 asyncpg-stubs = "*"
 ruff = "*"
 
-[tool.black]
-line-length = 125
-preview = true
-
 [tool.ruff]
+target-version = "py311"
 line-length = 125
 select = [
     "C4",

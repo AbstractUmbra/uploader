@@ -1,0 +1,7 @@
+.ruff_cache/
+.venv/
+target/
+.git/
+config.example.toml
+LICENSE
+README.md

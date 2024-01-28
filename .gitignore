@@ -1,3 +1,8 @@
 config.toml
 .venv/
 .vscode/
+
+
+# Added by cargo
+
+/target
