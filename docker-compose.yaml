@@ -4,6 +4,7 @@ services:
   uploader:
     build: .
     container_name: "uploader"
+    restart: "unless-stopped"
     extra_hosts:
       - "database:host-gateway"
     networks:
