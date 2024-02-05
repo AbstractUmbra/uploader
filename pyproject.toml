@@ -35,22 +35,22 @@ select = [
     "W",
     "PERF",
     "ANN",
+    "ASYNC",
+    "BLE",
+    "FBT",
+    "COM",
+    "CPY",
+    "DTZ",
+    "FA",
+    "G",
+    "INP",
+    "T20",
+    "RET",
+    "RSE",
+    "SLF",
+    "SLOT",
 ]
-ignore = [
-    "F401",
-    "F402",
-    "F403",
-    "F405",
-    "PERF203",
-    "RUF001",
-    "RUF009",
-    "SIM105",
-    "UP034",
-    "UP038",
-    "ANN101",
-    "ANN102",
-    "ANN401",
-]
+ignore = ["F403", "F405", "PERF203", "RUF001", "RUF009", "SIM105"]
 [tool.ruff.isort]
 split-on-trailing-comma = true
 combine-as-imports = true
