@@ -68,8 +68,14 @@ class User(NamedTuple):
     token: str
 
 
-def gen_filename(length: int = 16) -> str:
-    return token_urlsafe(length).replace("-", "")
+def gen_filename(length: int = 16, *, user: User) -> str:
+    name = token_urlsafe(length).replace("-", "")
+
+    path = ROOT_PATH / user.name / name
+    while path.exists():
+        return gen_filename(length, user=user)
+
+    return name
 
 
 FILETYPE_MAPPING: dict[str, str] = {
@@ -153,30 +159,25 @@ async def post_file(
     if not authed:
         return JSONResponse({"error": "Unauthorized"}, status_code=401)
 
-    if not image or len((data := await image.read())) == 0:
+    if not image or len(data := await image.read()) == 0:
         return JSONResponse({"error": "Empty data"}, status_code=400)
     if not image.content_type:
         return JSONResponse({"error": "Unknown or missing content type"}, status_code=400)
 
-    new_path_name = gen_filename()
+    new_path_name = gen_filename(user=user)
     new_file_name = f"{new_path_name}{FILETYPE_MAPPING[image.content_type]}"
+    new_path: pathlib.Path = ROOT_PATH / user.name / new_file_name
+
+    with new_path.open("wb") as dump:
+        await image.seek(0)
+        dump.write(data)
 
     if preserve is True:
-        new_path: pathlib.Path = ROOT_PATH / user.name / new_file_name
-        new_path.symlink_to(ROOT_PATH / "preserve" / new_file_name, False)
-
-        with new_path.open("wb") as dump:
-            await image.seek(0)
-            dump.write(data)
-            await request.app.send_to_webhook(data)
-    else:
-        new_path: pathlib.Path = ROOT_PATH / user.name / new_file_name
-        with new_path.open("wb") as dump:
-            await image.seek(0)
-            dump.write(data)
+        new_path.symlink_to(ROOT_PATH / user.name / "preserve" / new_file_name, target_is_directory=False)
+        await request.app.send_to_webhook(data)
 
     url = choice(request.app._config["web"][user.name])  # type: ignore
-    delete = gen_filename(20)
+    delete = gen_filename(20, user=user)
 
     async with request.app.state.db.acquire() as conn, conn.transaction():
         await conn.fetchrow(INSERT_QUERY, user.id, new_file_name, delete)
@@ -212,12 +213,12 @@ async def post_audio(
     if not authed:
         return JSONResponse({"error": "Unauthorized"}, status_code=401)
 
-    if not image or len((data := await image.read())) == 0:
+    if not image or len(data := await image.read()) == 0:
         return JSONResponse({"error": "Empty data"}, status_code=400)
     if not image.content_type:
         return JSONResponse({"error": "Unknown or missing content type"}, status_code=400)
 
-    new_path_name = gen_filename()
+    new_path_name = gen_filename(user=user)
     new_file_name = f"{new_path_name}{FILETYPE_MAPPING[image.content_type]}"
 
     new_path: pathlib.Path = AUDIO_PATH / new_file_name
@@ -226,7 +227,7 @@ async def post_audio(
         dump.write(data)
 
     url = "https://audio.saikoro.moe"
-    delete = gen_filename(20)
+    delete = gen_filename(20, user=user)
 
     async with request.app.state.db.acquire() as conn, conn.transaction():
         await conn.fetchrow(
