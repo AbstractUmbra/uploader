@@ -5,7 +5,7 @@ description = ""
 authors = ["Alex Nørgaard <umbra@abstractumbra.dev>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 aiohttp = "*"
 fastapi = "*"
 toml = "*"
@@ -20,7 +20,7 @@ asyncpg-stubs = "*"
 ruff = "*"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py312"
 line-length = 125
 [tool.ruff.lint]
 select = [
@@ -68,7 +68,7 @@ inline-quotes = "single"
 [tool.pyright]
 useLibraryCodeForTypes = true
 typeCheckingMode = "strict"
-pythonVersion = "3.11"
+pythonVersion = "3.12"
 venvPath = "."
 venv = "./venv"
 
