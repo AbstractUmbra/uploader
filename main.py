@@ -166,15 +166,16 @@ async def post_file(
 
     new_path_name = gen_filename(user=user)
     new_file_name = f"{new_path_name}{FILETYPE_MAPPING[image.content_type]}"
-    new_path: pathlib.Path = ROOT_PATH / user.name / new_file_name
 
-    with new_path.open("wb") as dump:
+    path = ROOT_PATH / user.name / new_file_name
+    if preserve is True:
+        preserve_path = path.parent / "preserve" / path.name
+        path.symlink_to(preserve_path, target_is_directory=False)
+        await request.app.send_to_webhook(data)
+
+    with path.open("wb") as dump:
         await image.seek(0)
         dump.write(data)
-
-    if preserve is True:
-        new_path.symlink_to(ROOT_PATH / user.name / "preserve" / new_file_name, target_is_directory=False)
-        await request.app.send_to_webhook(data)
 
     url = choice(request.app._config["web"][user.name])  # type: ignore
     delete = gen_filename(20, user=user)
