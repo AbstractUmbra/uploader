@@ -1,7 +1,5 @@
-.ruff_cache/
-.venv/
-target/
 .git/
-config.example.toml
+.vscode/
+target/
 LICENSE
 README.md

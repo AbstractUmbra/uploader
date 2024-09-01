@@ -1,12 +1,18 @@
-version: "3"
-
 services:
   uploader:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: "uploader"
     restart: "unless-stopped"
     extra_hosts:
       - "database:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://0.0.0.0:9000/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
     networks:
       main:
     volumes:

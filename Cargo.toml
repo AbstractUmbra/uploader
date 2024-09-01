@@ -1,0 +1,13 @@
+[package]
+name = "uploader"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+figment = { version = "0.10.19", features = ["toml", "json"] }
+rand = "0.8.5"
+rocket = { version = "*", features = ["json", "serde_json"] }
+rocket_db_pools = { version = "*", features = ["sqlx_postgres"] }
+sqlx = "*"

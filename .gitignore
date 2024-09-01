@@ -1,8 +1,11 @@
-config.toml
 .venv/
 .vscode/
-
+Rocket.toml
+config.json
 
 # Added by cargo
-
-/target
+target/
+debug/
+Cargo.lock
+**/*.rs.bk
+*.pdb
