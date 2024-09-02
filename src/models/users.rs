@@ -52,8 +52,7 @@ impl<'r> FromRequest<'r> for User {
 
 impl From<UserConfig> for User {
     fn from(value: UserConfig) -> User {
-        let mut path = PathBuf::from("/etc/uploaded/");
-        path.push(&value.name);
+        let path = PathBuf::from("/etc/uploaded");
 
         User {
             name: value.name,

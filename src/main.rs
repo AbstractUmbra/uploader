@@ -35,7 +35,11 @@ impl DB {
             .expect("Unable to insert upload row.");
     }
 
-    pub(crate) async fn remove_upload(&self, user_id: i16, deletion_id: String) -> PgRow {
+    pub(crate) async fn remove_upload(
+        &self,
+        user_id: i16,
+        deletion_id: String,
+    ) -> Result<PgRow, rocket_db_pools::sqlx::Error> {
         let mut conn = self
             .acquire()
             .await
@@ -46,7 +50,6 @@ impl DB {
             .bind(user_id)
             .fetch_one(&mut *conn)
             .await
-            .expect("Unable to remove row from database.")
     }
 }
 

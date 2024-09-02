@@ -59,7 +59,7 @@ pub(crate) async fn upload_file(
     let upload_data = ImageUploadResponse {
         image: url.to_owned(),
         delete: format!(
-            "https://upload.umbra-is.gay/file/{}?user_id={}",
+            "https://upload.umbra-is.gay/delete/{}?user_id={}",
             deletion_id, user.id
         ),
         r#type: content_type.to_string(),
