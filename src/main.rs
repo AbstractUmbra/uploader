@@ -2,10 +2,13 @@
 extern crate rocket;
 
 mod config;
+mod delete;
 mod models;
 mod upload;
 
 use config::Config;
+use delete::delete_upload;
+use rocket_db_pools::sqlx::postgres::PgRow;
 use upload::upload_file;
 
 use figment::providers::Format;
@@ -31,6 +34,20 @@ impl DB {
             .await
             .expect("Unable to insert upload row.");
     }
+
+    pub(crate) async fn remove_upload(&self, user_id: i16, deletion_id: String) -> PgRow {
+        let mut conn = self
+            .acquire()
+            .await
+            .expect("Unable to acquire database connection.");
+
+        sqlx::query("DELETE FROM images WHERE deletion_id = $1 AND author = $2 RETURNING filename;")
+            .bind(deletion_id)
+            .bind(user_id)
+            .fetch_one(&mut *conn)
+            .await
+            .expect("Unable to remove row from database.")
+    }
 }
 
 #[get("/health")]
@@ -55,6 +72,7 @@ async fn main() -> Result<(), rocket::Error> {
         .manage(user_config)
         .mount("/", routes![healthcheck])
         .mount("/dickpic", routes![upload_file])
+        .mount("/delete", routes![delete_upload])
         .launch()
         .await?;
 
