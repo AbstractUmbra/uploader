@@ -17,7 +17,7 @@ pub(crate) struct User {
     pub id: i16,
     pub token: String,
     pub response_urls: Vec<String>,
-    pub save_path: PathBuf,
+    pub save_base_path: PathBuf,
 }
 
 #[rocket::async_trait]
@@ -52,7 +52,7 @@ impl<'r> FromRequest<'r> for User {
 
 impl From<UserConfig> for User {
     fn from(value: UserConfig) -> User {
-        let mut path = PathBuf::from("/etc/images/");
+        let mut path = PathBuf::from("/etc/uploaded/");
         path.push(&value.name);
 
         User {
@@ -60,7 +60,7 @@ impl From<UserConfig> for User {
             id: value.id,
             token: value.token,
             response_urls: value.response_urls,
-            save_path: path,
+            save_base_path: path,
         }
     }
 }

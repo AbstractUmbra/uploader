@@ -1,5 +1,5 @@
 use rand::seq::SliceRandom;
-use rand::{distributions::Alphanumeric, Rng}; // 0.7.2
+use rand::{distributions::Alphanumeric, Rng};
 
 use crate::models::responses::ImageUploadResponse;
 use crate::models::FileUpload;
@@ -40,8 +40,13 @@ pub(crate) async fn upload_file(
     db.insert_upload(user.id, &filename, deletion_id.clone())
         .await;
 
-    let mut path = user.save_path;
-    path.push(filename.clone());
+    let path = if content_type.top() == "image" {
+        user.save_base_path.join("images").join(filename.clone())
+    } else if content_type.top() == "audio" {
+        user.save_base_path.join("audio").join(filename.clone())
+    } else {
+        user.save_base_path.join(filename.clone())
+    };
 
     let mut url = user
         .response_urls
