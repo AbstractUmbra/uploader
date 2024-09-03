@@ -16,8 +16,7 @@ services:
     networks:
       main:
     volumes:
-      - /home/penumbra/images/:/etc/images/:rw
-      - /home/penumbra/audio/:/etc/audio/:rw
+      - /home/penumbra/uploaded/:/etc/uploaded/:rw
 
 networks:
   main:

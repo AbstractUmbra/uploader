@@ -1,0 +1,15 @@
+{
+    "users": [
+        {
+            "name": "user1",
+            "id": 20000284,
+            "token": "you should generate a secret value somehow and use this for access keys",
+            "response_urls": [
+                "The base urls",
+                "That host the images",
+                "The filename will be appended in the response",
+                "https://image.filehost.xyz"
+            ]
+        }
+    ]
+}
