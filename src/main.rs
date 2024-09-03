@@ -9,7 +9,7 @@ mod upload;
 use config::Config;
 use delete::delete_upload;
 use rocket_db_pools::sqlx::postgres::PgRow;
-use upload::upload_file;
+use upload::{upload_audio, upload_file};
 
 use figment::providers::Format;
 use figment::{providers::Json, Figment};
@@ -20,7 +20,7 @@ use rocket_db_pools::{sqlx, Connection, Database};
 pub(crate) struct DB(sqlx::PgPool);
 
 impl DB {
-    pub async fn insert_upload(&self, user_id: i16, filename: &String, deletion_id: String) {
+    pub(crate) async fn insert_upload(&self, user_id: i16, filename: &String, deletion_id: String) {
         let mut conn = self
             .acquire()
             .await
@@ -33,6 +33,30 @@ impl DB {
             .execute(&mut *conn)
             .await
             .expect("Unable to insert upload row.");
+    }
+
+    pub(crate) async fn insert_audio(
+        &self,
+        user_id: i16,
+        filename: &String,
+        title: Option<&String>,
+        author: Option<&String>,
+        deletion_id: String,
+    ) {
+        let mut conn = self
+            .acquire()
+            .await
+            .expect("Unable to acquire database connection.");
+
+        sqlx::query("INSERT INTO audio (author, filename, title, soundgasm_author, deletion_id) VALUES ($1, $2, $3, $4, $5);")
+            .bind(user_id)
+            .bind(filename)
+            .bind(title)
+            .bind(author)
+            .bind(deletion_id)
+            .execute(&mut *conn)
+            .await
+            .expect("Unable to insert audio row.");
     }
 
     pub(crate) async fn remove_upload(
@@ -74,7 +98,7 @@ async fn main() -> Result<(), rocket::Error> {
         .attach(DB::init())
         .manage(user_config)
         .mount("/", routes![healthcheck])
-        .mount("/dickpic", routes![upload_file])
+        .mount("/", routes![upload_file, upload_audio])
         .mount("/delete", routes![delete_upload])
         .launch()
         .await?;
