@@ -1,0 +1,37 @@
+[default]
+limits.data-form = "20MiB"
+
+[debug]
+address = "127.0.0.1"
+port = 8000
+secret_key = "supersecretkey"
+
+[release]
+address = "0.0.0.0"
+port = 9000
+# temp_dir = "..." # overwrite this if you run within a container to make one of the mapped volumes.
+secret_key = "pleaseactuallymakethisasupersecretkey"
+# generate your own 256bit base64 key with `openssl rand -base64 32`
+
+# make one database connection for debug AND release
+[default.databases.postgres]
+host = "database"
+url = "postgres://upload:password@localhost/upload"
+database = "upload"
+user = "upload"
+password = "password"
+
+# ... or, define one of each:
+# [debug.databases.postgres]
+# host = "database"
+# url = "postgres://upload:password@localhost/upload"
+# database = "upload"
+# user = "upload"
+# password = "password"
+
+# [release.databases.postgres]
+# host = "database"
+# url = "postgres://upload:password@database/upload"
+# database = "upload"
+# user = "upload"
+# password = "password"

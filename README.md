@@ -1,5 +1,7 @@
 # AbstractUmbra's file uploader
 
-This repo is not designed for direct cloning and usage, but merely as a guide for people who want to set their own POST endpoint up and example usage.
+This repo mostly exists for my personal backup and re-use, but could serve as a how-to for Rocket.rs, I guess?
 
-NOTE: when accessing a db on the outer host, add the network gateway to the host's listening addresses.
+If you want to try and run it yourself, make a copy of `Rocket.example.toml` as `Rocket.toml`, and `config.example.json` to `config.json` and edit the values within, I left comments to cover what they do if not explicit.
+
+Author note: this likely isn't very good, but I'm still learning.
