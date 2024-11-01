@@ -7,7 +7,7 @@ pub(crate) struct FileUpload<'r> {
 
 #[derive(FromForm, Debug)]
 pub(crate) struct AudioUpload<'r> {
-    pub file: TempFile<'r>,
+    pub audio: TempFile<'r>,
     pub title: Option<String>,
     pub author: Option<String>,
 }

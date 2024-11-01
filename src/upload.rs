@@ -78,14 +78,20 @@ pub(crate) async fn upload_audio(
     let deletion_id = generate_name();
 
     let content_type = upload
-        .file
+        .audio
         .content_type()
         .expect("No content type specified during the upload.");
 
-    let file_ext = content_type
-        .extension()
-        .expect("No provided file extension for this content type")
-        .as_str();
+    let file_ext = match content_type.extension() {
+        Some(ext) => ext.as_str(),
+        None => {
+            if content_type.to_string().to_lowercase() == "audio/mp4" {
+                "m4a"
+            } else {
+                "unknown"
+            }
+        }
+    };
 
     let filename = format!("{}.{}", generate_name(), file_ext);
 
@@ -100,13 +106,7 @@ pub(crate) async fn upload_audio(
 
     let path = user.save_base_path.join("audio").join(filename.clone());
 
-    let mut url = user
-        .response_urls
-        .choose(&mut rand::thread_rng())
-        .expect("Unable to source a URL.")
-        .to_owned();
-
-    url.push_str(filename.as_str());
+    let url = format!("https://audio.saikoro.moe/{}", filename.as_str());
 
     let upload_data = AudioUploadResponse {
         url: url.to_owned(),
@@ -117,11 +117,11 @@ pub(crate) async fn upload_audio(
             deletion_id, user.id
         ),
         r#type: content_type.to_string(),
-        size: upload.file.len(),
+        size: upload.audio.len(),
     };
 
     upload
-        .file
+        .audio
         .persist_to(path)
         .await
         .expect("Unable to write file to destination.");
