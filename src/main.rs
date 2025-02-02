@@ -8,6 +8,7 @@ mod upload;
 
 use config::Config;
 use delete::delete_upload;
+use rocket::fs::{FileServer, Options};
 use rocket_db_pools::sqlx::postgres::PgRow;
 use upload::{upload_audio, upload_file};
 
@@ -100,6 +101,10 @@ async fn main() -> Result<(), rocket::Error> {
         .mount("/", routes![healthcheck])
         .mount("/", routes![upload_file, upload_audio])
         .mount("/delete", routes![delete_upload])
+        .mount(
+            "/favicon.ico",
+            FileServer::new("static/favicon.ico", Options::IndexFile),
+        )
         .launch()
         .await?;
 

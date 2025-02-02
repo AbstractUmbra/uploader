@@ -25,10 +25,13 @@ ARG APP_NAME=uploader
 ENV APP_NAME=${APP_NAME}
 ENV ROCKET_PROFILE=release
 
+USER 1000
+
 WORKDIR /app
-COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/$APP_NAME .
-COPY ./Rocket.toml /app/Rocket.toml
-COPY ./config.json /app/config.json
+COPY --from=builder --chown=1000:1000 /app/target/x86_64-unknown-linux-musl/release/$APP_NAME .
+COPY --chown=1000:1000 ./Rocket.toml /app/Rocket.toml
+COPY --chown=1000:1000 ./config.json /app/config.json
+COPY ./static/ /app/static
 
 EXPOSE 8000
 
