@@ -1,0 +1,14 @@
+{
+    "Version": "14.0.1",
+    "Name": "Personal",
+    "DestinationType": "ImageUploader, FileUploader",
+    "RequestMethod": "POST",
+    "RequestURL": "https://upload.yourdomain.com/dickpic",
+    "Headers": {
+        "Authorization": "Bearer xsSCeYOU3PYK29vdIkG2lHLsRZu0UUWDbx5ZxEt5h8bQ=="
+    },
+    "Body": "MultipartFormData",
+    "FileFormName": "file",
+    "URL": "{json:image}",
+    "DeletionURL": "{json:delete}"
+}
