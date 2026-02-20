@@ -38,7 +38,6 @@ impl DB {
 
     pub(crate) async fn insert_audio(
         &self,
-        user_id: i16,
         filename: &String,
         title: Option<&String>,
         author: Option<&String>,
@@ -49,15 +48,16 @@ impl DB {
             .await
             .expect("Unable to acquire database connection.");
 
-        sqlx::query("INSERT INTO audio (author, filename, title, soundgasm_author, deletion_id) VALUES ($1, $2, $3, $4, $5);")
-            .bind(user_id)
-            .bind(filename)
-            .bind(title)
-            .bind(author)
-            .bind(deletion_id)
-            .execute(&mut *conn)
-            .await
-            .expect("Unable to insert audio row.");
+        sqlx::query(
+            "INSERT INTO audio (filename, title, author, deletion_id) VALUES ($1, $2, $3, $4);",
+        )
+        .bind(filename)
+        .bind(title)
+        .bind(author)
+        .bind(deletion_id)
+        .execute(&mut *conn)
+        .await
+        .expect("Unable to insert audio row.");
     }
 
     pub(crate) async fn remove_upload(

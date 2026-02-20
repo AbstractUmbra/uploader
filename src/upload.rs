@@ -1,5 +1,6 @@
-use rand::seq::SliceRandom;
-use rand::{distributions::Alphanumeric, Rng};
+use rand::distr::{Alphanumeric, Distribution};
+use rand::prelude::IndexedRandom;
+use rand::{rngs::StdRng, SeedableRng};
 
 use crate::models::responses::{AudioUploadResponse, ImageUploadResponse};
 use crate::models::User;
@@ -10,8 +11,10 @@ use rocket::form::Form;
 use rocket::serde::json::Json;
 
 fn generate_name() -> String {
-    rand::thread_rng()
-        .sample_iter(&Alphanumeric)
+    let mut rng = rand::rng();
+
+    Alphanumeric
+        .sample_iter(&mut rng)
         .take(20)
         .map(char::from)
         .collect()
@@ -42,9 +45,11 @@ pub(crate) async fn upload_file(
 
     let path = user.save_base_path.join("images").join(filename.clone());
 
+    let mut rng = StdRng::from_rng(&mut rand::rng());
+
     let mut url = user
         .response_urls
-        .choose(&mut rand::thread_rng())
+        .choose(&mut rng)
         .expect("Unable to source a URL.")
         .to_owned();
 
@@ -96,7 +101,6 @@ pub(crate) async fn upload_audio(
     let filename = format!("{}.{}", generate_name(), file_ext);
 
     db.insert_audio(
-        user.id,
         &filename,
         upload.title.as_ref(),
         upload.author.as_ref(),
